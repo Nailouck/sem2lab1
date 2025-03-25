@@ -6,16 +6,15 @@
 
 static Type_Info* INT_TYPE_INFO = NULL;
 
-void int_add(const int a, const int b, int* result);
-
-void int_multiply(const int a, const int b, int* result);
-
-void int_multiply_digit(int* a, const double b);
-
-void int_print(const int a);
-
-bool int_compairson(const int a, const int b);
+void int_add(const void* arg1, const void* arg2, void* result);
+void int_multiply(const void* arg1, const void* arg2, void* result);
+void int_multiply_digit(void* arg1, const double arg2);
+void int_scan(void* arg1);
+void int_print(const void* arg1);
+bool int_compairson(const void* arg1, const void* arg2);
 
 Type_Info* Get_int_type_info();
+
+void Free_Int_type_Info();
 
 #endif
