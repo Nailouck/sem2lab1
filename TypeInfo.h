@@ -13,6 +13,7 @@ typedef struct {
 	Binary_Operator multiply;
 	void (*multiply_digit)(void* arg1, const double arg2);
 	void (*print)(const void*);
+	void (*scan)(void*);
 	bool (*compairson)(const void* arg1, const void* arg2);
 } Type_Info;
 

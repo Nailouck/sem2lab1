@@ -2,54 +2,200 @@
 #define TEST_H
 
 #include "complex.h"
+#include "integer.h"
+#include "matrix.h"
 #include <assert.h>
 #include <stdio.h>
+#include "MatrixError.h"
 
-void cmplx_test() {
+
+
+void Cmplx_test() {
 	Complex arg1;
 	Complex arg2;
-	Complex* result;
+	Complex result;
 	Complex answer;
 	for (int i = 0; i < 20; i++) {
-		int r1 = rand() % 100, r2 = rand() % 100, i1 = rand() % 100, i2 = rand() % 100;
-		arg1.Re = (double)r1;
-		arg1.Im = (double)i1;
-		arg2.Re = (double)r2;
-		arg2.Im = (double)i2;
+		arg1.Re = (double)(rand() % 100);
+		arg1.Im = (double)(rand() % 100);
+		arg2.Re = (double)(rand() % 100);
+		arg2.Im = (double)(rand() % 100);
+		double digit = (double)(rand() % 100);
 
-		Cmplx_add(arg1, arg2, result);
-		answer.Re = (double)r1 + (double)r2;
-		answer.Im = (double)i1 + (double)i2;
-		printf("Integer addition (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result->Re, result->Im);
-		assert(Cmplx_comparison(*result, answer));
+		answer.Re = arg1.Re + arg2.Re;
+		answer.Im = arg1.Im + arg2.Im;
+		Cmplx_add(&arg1, &arg2, &result);
 
-		Cmplx_multiply(arg1, arg2, result);
-		answer.Re = (double)r1 * (double)r2 - (double)i1 * (double)i2;
-		answer.Im = (double)i1 * (double)r2 + (double)r1 * (double)i2;
-		printf("Integer multiplication (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result->Re, result->Im);
-		assert(Cmplx_comparison(*result, answer));
+		Cmplx_print(&arg1);
+		Cmplx_print(&arg2);
+		Cmplx_print(&answer);
+		Cmplx_print(&result);
 
-		int r3 = (rand() % 1000);
-		int r4 = (rand() % 1000);
-		int i3 = (rand() % 1000);
-		int i4 = (rand() % 1000);
-		arg1.Re = (double)r3 / 10;
-		arg1.Im = (double)i3 / 10;
-		arg2.Re = (double)r4 / 10;
-		arg2.Im = (double)i4 / 10;
+		printf("Integer addition (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result.Re, result.Im);
+		assert(Cmplx_comparison(&result, &answer));
 
-		Cmplx_add(arg1, arg2, result);
-		answer.Re = (double)(r3 + r4) / 10;
-		answer.Im = (double)(i3 + i4) / 10;
-		printf("Double addition (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result->Re, result->Im);
-		assert(Cmplx_comparison(*result, answer));
+		answer.Re = arg1.Re * arg2.Re - arg1.Im * arg2.Im;
+		answer.Im = arg1.Im * arg2.Re + arg1.Re * arg2.Im;
+		Cmplx_multiply(&arg1, &arg2, &result);
 
-		Cmplx_multiply(arg1, arg2, result);
-		answer.Re = (double)r3 / 10 * (double)r4 / 10 - (double)i3 / 10 * (double)i4 / 10;
-		answer.Im = (double)i3 / 10 * (double)r4 / 10 + (double)r3 / 10 * (double)i4 / 10;
-		printf("Double multiplication (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result->Re, result->Im);
-		assert(Cmplx_comparison(*result, answer));
+		Cmplx_print(&arg1);
+		Cmplx_print(&arg2);
+		Cmplx_print(&answer);
+		Cmplx_print(&result);
+
+		printf("Integer multiplication (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result.Re, result.Im);
+		assert(Cmplx_comparison(&result, &answer));
+
+		answer.Re = arg1.Re * digit;
+		answer.Im = arg1.Im * digit;
+		printf("Integer multiplication (%lf, %lf) on digit %lf. ", arg1.Re, arg1.Im, digit);
+		Cmplx_multiply_digit(&arg1, digit);
+		printf("Expected value (%lf, %lf); Real value (%lf, %lf)\n", answer.Re, answer.Im, arg1.Re, arg1.Im);
+		assert(Cmplx_comparison(&arg1, &answer));
+
+		answer.Re = arg2.Re * digit;
+		answer.Im = arg2.Im * digit;
+		printf("Integer multiplication (%lf, %lf) on digit %lf. ", arg2.Re, arg2.Im, digit);
+		Cmplx_multiply_digit(&arg2, digit);
+		printf("Expected value (%lf, %lf); Real value (%lf, %lf)\n", answer.Re, answer.Im, arg2.Re, arg2.Im);
+		assert(Cmplx_comparison(&arg2, &answer));
+
+
+		arg1.Re = (double)(rand() % 1000) / 10;
+		arg1.Im = (double)(rand() % 1000) / 10;
+		arg2.Re = (double)(rand() % 1000) / 10;
+		arg2.Im = (double)(rand() % 1000) / 10;
+		digit = (double)(rand() % 1000) / 100;
+
+		answer.Re = arg1.Re + arg2.Re;
+		answer.Im = arg1.Im + arg2.Im;
+		Cmplx_add(&arg1, &arg2, &result);
+
+		Cmplx_print(&arg1);
+		Cmplx_print(&arg2);
+		Cmplx_print(&answer);
+		Cmplx_print(&result);
+
+		printf("Double addition (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result.Re, result.Im);
+		assert(Cmplx_comparison(&result, &answer));
+
+		answer.Re = arg1.Re * arg2.Re - arg1.Im * arg2.Im;
+		answer.Im = arg1.Im * arg2.Re + arg1.Re * arg2.Im;
+		Cmplx_multiply(&arg1, &arg2, &result);
+
+		Cmplx_print(&arg1);
+		Cmplx_print(&arg2);
+		Cmplx_print(&answer);
+		Cmplx_print(&result);
+
+		printf("Double multiplication (%lf, %lf) and (%lf, %lf). Expected value (%lf, %lf); Real value (%lf, %lf)\n", arg1.Re, arg1.Im, arg2.Re, arg2.Im, answer.Re, answer.Im, result.Re, result.Im);
+		assert(Cmplx_comparison(&result, &answer));
+
+		answer.Re = arg1.Re * digit;
+		answer.Im = arg1.Im * digit;
+		printf("Double multiplication (%lf, %lf) on digit %lf. ", arg1.Re, arg1.Im, digit);
+		Cmplx_multiply_digit(&arg1, digit);
+		printf("Expected value (%lf, %lf); Real value (%lf, %lf)\n", answer.Re, answer.Im, arg1.Re, arg1.Im);
+		assert(Cmplx_comparison(&arg1, &answer));
+
+		answer.Re = arg2.Re * digit;
+		answer.Im = arg2.Im * digit;
+		printf("Double multiplication (%lf, %lf) on digit %lf. ", arg2.Re, arg2.Im, digit);
+		Cmplx_multiply_digit(&arg2, digit);
+		printf("Expected value (%lf, %lf); Real value (%lf, %lf)\n", answer.Re, answer.Im, arg2.Re, arg2.Im);
+		assert(Cmplx_comparison(&arg2, &answer));
 	}
 }
 
+void Mtrx_test() {
+	unsigned int order = 3;
+
+	Mtrx_error* code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
+	*code = MATRIX_OPERATION_FAILED;
+
+	Matrix* mtrx1 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	Matrix* mtrx2 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	Matrix* mtrx3 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+
+	Mtrx_fill(mtrx1);
+	printf("//////////\n");
+	Mtrx_fill(mtrx2);
+
+	Matrix* result = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+
+	Mtrx_add(mtrx1, mtrx2, mtrx3, code);
+
+	for (int i = 0; i < mtrx1->order; i++) {
+		for (int j = 0; j < mtrx1->order; j++) {
+				mtrx1->type_Info->add(&mtrx1->elements[i][j], &mtrx2->elements[i][j], &result->elements[i][j]);
+		}
+	}
+
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(mtrx2); 
+	printf("\n\n");
+	Mtrx_print(mtrx3);
+	printf("\n\n");
+	Mtrx_print(result); 
+
+	assert(Mtrx_comparison(mtrx3, result));
+
+	printf("\n\nAddition Success\n\n");
+
+	Mtrx_multiply(mtrx1, mtrx2, mtrx3, code);
+
+	for (int i = 0; i < mtrx1->order; i++) {
+		for (int j = 0; j < mtrx1->order; j++) {
+			result->type_Info->add(&mtrx1->elements[j][i], &mtrx2->elements[i][j], &result->elements[i][j]);
+		}
+	}
+
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(mtrx2);
+	printf("\n\n");
+	Mtrx_print(mtrx3);
+	printf("\n\n");
+	Mtrx_print(result);
+
+	assert(Mtrx_comparison(mtrx3, result));
+
+	printf("\n\nMultiplication Success\n\n");
+
+	double digit = -1.0;
+
+	Matrix* E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
+
+	/*Matrix* E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
+	Matrix* _E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
+	Matrix* zero = Mtrx_zero(Get_Cmplx_type_Info(), order, code);
+
+	Mtrx_print(E);
+	printf("\n");
+	Mtrx_print(zero);
+	printf("\n");
+
+	Mtrx_multiply_digit(_E, digit);
+
+	Mtrx_print(_E);
+	printf("\n");
+
+	Mtrx_add(E, _E, mtrx3, code);
+
+	assert(Mtrx_comparison(mtrx3, zero));
+	*/
+	if (E != NULL) Mtrx_free(E);
+	//if (_E != NULL) Mtrx_free(_E);
+	//if (zero != NULL) Mtrx_free(zero);
+	if (result != NULL) Mtrx_free(result);
+	if (mtrx1 != NULL) Mtrx_free(mtrx1);
+	if (mtrx2 != NULL) Mtrx_free(mtrx2);
+	if (mtrx3 != NULL) Mtrx_free(mtrx3);
+
+	free(code);
+
+	Free_Cmplx_type_Info();
+	Free_Int_type_Info();
+}
 #endif

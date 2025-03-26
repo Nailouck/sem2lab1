@@ -8,7 +8,10 @@ typedef enum {
 	INCOMPATIBLE_MATRIX_TYPES = 300,
 	NULL_MATRIX_ORDER = 400,
 	MEMORY_FREE_FAILED = 500,
-	INCOMPATIBLE_ARRAY_ORDER = 600
-} Matrix_errors;
+	INCOMPATIBLE_ARRAY_ORDER = 600,
+	MATRIX_OPERATION_FAILED = 700
+} Mtrx_error;
+
+void err_proc(Mtrx_error* code);
 
 #endif
