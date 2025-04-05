@@ -162,32 +162,27 @@ void Mtrx_test() {
 	assert(Mtrx_comparison(mtrx3, result));
 
 	printf("\n\nMultiplication Success\n\n");
+	
+	Mtrx_print(mtrx1);
 
+	Complex one = { -1, 0 };
 	double digit = -1.0;
 
-	Matrix* E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
+	for (int i = 0; i < result->order; i++) {
+		for (int j = 0; j < result->order; j++) {
+			result->type_Info->multiply(&mtrx1->elements[i][j], &one, &result->elements[i][j]);
+		}
+	}
 
-	/*Matrix* E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
-	Matrix* _E = Mtrx_identity(Get_Cmplx_type_Info(), order, code);
-	Matrix* zero = Mtrx_zero(Get_Cmplx_type_Info(), order, code);
+	mtrx1->type_Info->multiply_digit(&mtrx1, digit);
 
-	Mtrx_print(E);
-	printf("\n");
-	Mtrx_print(zero);
-	printf("\n");
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(result);
+	printf("\n\n");
 
-	Mtrx_multiply_digit(_E, digit);
+	assert(result->type_Info->compairson(&mtrx1, &result));
 
-	Mtrx_print(_E);
-	printf("\n");
-
-	Mtrx_add(E, _E, mtrx3, code);
-
-	assert(Mtrx_comparison(mtrx3, zero));
-	*/
-	if (E != NULL) Mtrx_free(E);
-	//if (_E != NULL) Mtrx_free(_E);
-	//if (zero != NULL) Mtrx_free(zero);
 	if (result != NULL) Mtrx_free(result);
 	if (mtrx1 != NULL) Mtrx_free(mtrx1);
 	if (mtrx2 != NULL) Mtrx_free(mtrx2);

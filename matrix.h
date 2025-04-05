@@ -25,9 +25,9 @@ void Mtrx_multiply_digit(Matrix* A, const double digit);
 
 bool Mtrx_comparison(const Matrix* A, const Matrix* B);
 
-Matrix* Mtrx_identity(Type_Info* type_Info, unsigned int order, Mtrx_error* code);
+//Matrix* Mtrx_identity(Type_Info* type_Info, unsigned int order, Mtrx_error* code);
 
-Matrix* Mtrx_zero(Type_Info* type_Info, unsigned int order, Mtrx_error* code);
+//Matrix* Mtrx_zero(Type_Info* type_Info, unsigned int order, Mtrx_error* code);
 
 void Mtrx_print(Matrix* mtrx);
 

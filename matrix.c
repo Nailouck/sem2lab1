@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+const int NMAX = 3;
+
 Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
 	
 	//*code = MATRIX_OPERATION_OK;
@@ -33,6 +35,8 @@ Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) 
 	for (unsigned int i = 0; i < order; i++) {
 		mtrx->elements[i] = (void**)malloc(type_Info->size * order);
 	}
+
+	*code = MATRIX_OPERATION_OK;
 
 	err_proc(code);
 	return mtrx;
@@ -87,13 +91,29 @@ void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error*code)
 		return;
 	}
 
-	for (int i = 0; i < A->order; i++) {
+	void* arr[NMAX];
+
+	if (*code != MATRIX_OPERATION_OK) return;
+
+	for (int i = 0; i < A->order; i++) { // Цикл по i и j изначально неправильный: он считает только диагональные элементы. Пере5писать индексацию, также продумать индексы в результирующей матрице.
 		for (int j = 0; j < A->order; j++) {
-			C->type_Info->add(&A->elements[j][i], &B->elements[i][j], &C->elements[i][j]);
+
+			C->type_Info->multiply(&A->elements[i][j], &B->elements[j][i], &arr[j]);
+
+			for (int k = 0; k < NMAX; k++) {
+				if (k == 0) {
+					C->type_Info->add(arr[k], arr[k + 1], C->elements[index1][index2]);
+					k++;
+				}
+				C->type_Info->add(C->elements[index1][index2], arr[k], C->elements[index1][index2]);
+			}
+
+
 		}
 	}
-
+	
 	*code = MATRIX_OPERATION_OK;
+
 	err_proc(code);
 }
 
@@ -115,59 +135,63 @@ bool Mtrx_comparison(const Matrix* A, const Matrix* B) {
 	return true;
 }
 
-Matrix* Mtrx_identity(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-	Matrix* mtrx = Mtrx_create(type_Info, order, code);
-
-	if (*code != MATRIX_OPERATION_OK) { return NULL; }
-
-	switch (type_Info->size) {
-		case sizeof(int) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(int*)mtrx->elements[i][j] = (i == j ? 1 : 0);
-				}
-			}
-			break;
-		case sizeof(Complex) :
-
-			Complex one = { 1, 0 };
-			Complex zero = { 0, 0 };
-
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(Complex*)mtrx->elements[i][j] = (i == j ? one : zero);
-				}
-			}
-			break;
-	}
-	return mtrx;
-}
-
-Matrix* Mtrx_zero(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-	Matrix* mtrx = Mtrx_create(type_Info, order, code);
-
-	if (*code != MATRIX_OPERATION_OK) { return NULL; }
-
-	Complex zero = { 0, 0 };
-
-	switch (type_Info->size) {
-		case sizeof(int) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(int*)mtrx->elements[i][j] = 0;
-				}
-			}
-		break;
-		case sizeof(Complex) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(Complex*)mtrx->elements[i][j] = zero;
-				}
-			}
-		break;
-	}
-	return mtrx;
-}
+//Matrix* Mtrx_identity(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
+//	Matrix* mtrx = Mtrx_create(type_Info, order, code);
+//
+//	if (*code != MATRIX_OPERATION_OK) { return NULL; }
+//	
+//	void* one;
+//	void* zero;
+//
+//	switch (type_Info->size) {
+//		case sizeof(int) : {
+//			*(int*)one = 1;
+//			*(int*)zero = 0;
+//			break;
+//		}
+//		case sizeof(Complex) : {
+//			Complex o = { 1, 0 };
+//			Complex z = { 0, 0 };
+//			*(Complex*)one = o;
+//			*(Complex*)zero = z;
+//			break;
+//		}
+//	}
+//
+//	for (int i = 0; i < order; i++) {
+//		for (int j = 0; j < order; j++) {
+//			mtrx->elements[i][j] = (i == j ? one : zero);
+//		}
+//	}
+//
+//	return mtrx;
+//}
+//
+//Matrix* Mtrx_zero(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
+//	Matrix* mtrx = Mtrx_create(type_Info, order, code);
+//
+//	if (*code != MATRIX_OPERATION_OK) { return NULL; }
+//
+//	Complex zero = { 0, 0 };
+//
+//	switch (type_Info->size) {
+//		case sizeof(int) :
+//			for (int i = 0; i < order; i++) {
+//				for (int j = 0; j < order; j++) {
+//					*(int*)mtrx->elements[i][j] = 0;
+//				}
+//			}
+//		break;
+//		case sizeof(Complex) :
+//			for (int i = 0; i < order; i++) {
+//				for (int j = 0; j < order; j++) {
+//					*(Complex*)mtrx->elements[i][j] = zero;
+//				}
+//			}
+//		break;
+//	}
+//	return mtrx;
+//}
 
 void Mtrx_print(Matrix* mtrx) {
 	printf("{");
