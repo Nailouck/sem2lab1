@@ -193,7 +193,6 @@ void Mtrx_test() {
 	Mtrx_free(mtrx3);
 
 	free(code);
-
 	Free_Cmplx_type_Info();
 	Free_Int_type_Info();
 }

@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+const int NMAX = 3;
+
 Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
 
 	if (order == 0) {
@@ -97,6 +99,8 @@ void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error*code)
 		err_proc(code);
 		return;
 	}
+
+	void* arr[NMAX];
 
 	for (int i = 0; i < A->order; i++) {
 		for (int j = 0; j < A->order; j++) {
