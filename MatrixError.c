@@ -34,5 +34,13 @@ void err_proc(Mtrx_error* code) {
         printf("MATRIX OPERATION FAILED! Error code 700\n");
         break;
     }
+    case NULL_MATRIX: {
+        printf("NULL-MATRIX has been encountered! Error code 800\n");
+        break;
+    }
+    case NULL_MATRIX_ERROR_CODE: {
+        printf("NULL MATRIX ERROR STRUCT has been encountered! Error code 900\n");
+        break;
+    }
     }
 }

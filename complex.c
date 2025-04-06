@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-//Правильная очистка памяти при вызове add и multyply
+
 #define NORMALYZING_COEF 1000000
 
 void* Cmplx_add(const Complex* a, const Complex* b) {

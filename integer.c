@@ -5,20 +5,21 @@
 #include <stdio.h>
 
 void* int_add(const void* arg1, const void* arg2) {
-	void* result;
-	*(int*)(result) = *(int*)arg1 + *(int*)arg2;
+	int* result = (int*)malloc(sizeof(int));
+	*result = *(int*)arg1 + *(int*)arg2;
 	return result;
 }
 
 void* int_multiply(const void* arg1, const void* arg2) {
-	void* result;
-	*(int*)result = *(int*)arg1 * *(int*)arg2;
+	int* result = (int*)malloc(sizeof(int));
+	*result = *(int*)arg1 * *(int*)arg2;
 	return result;
 }
 
 void* int_multiply_digit(void* arg1, const double arg2) {
-	*(int*)arg1 *= (int)arg2;
-	return arg1;
+	int* result = (int*)malloc(sizeof(int));
+	*result = *(int*)arg1 * (int)arg2;
+	return result;
 }
 
 void int_scan(void* arg1) { scanf("%d", (int*)arg1); }
@@ -28,7 +29,7 @@ void int_print(const void* arg1) { printf("%d", *(int*)arg1); }
 bool int_comparison(const void* arg1, const void* arg2) { return *(int*)arg1 == *(int*)arg2 ? true : false; }
 
 
-Type_Info* Get_int_type_info() {
+Type_Info* Get_Int_type_Info() {
 	if (INT_TYPE_INFO == NULL) {
 		INT_TYPE_INFO = (Type_Info*)malloc(sizeof(Type_Info));
 		INT_TYPE_INFO->size = sizeof(int);

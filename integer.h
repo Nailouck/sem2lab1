@@ -13,7 +13,7 @@ void int_scan(void* arg1);
 void int_print(const void* arg1);
 bool int_comparison(const void* arg1, const void* arg2);
 
-Type_Info* Get_int_type_info();
+Type_Info* Get_Int_type_Info();
 
 void Free_Int_type_Info();
 
