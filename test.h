@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "MatrixError.h"
 
-
+const int NMAX1 = 3;
 
 void Cmplx_test() {
 	Complex arg1;
@@ -24,7 +24,7 @@ void Cmplx_test() {
 
 		answer.Re = arg1.Re + arg2.Re;
 		answer.Im = arg1.Im + arg2.Im;
-		Cmplx_add(&arg1, &arg2, &result);
+		result = *(Complex*)Cmplx_add(&arg1, &arg2);
 
 		Cmplx_print(&arg1);
 		Cmplx_print(&arg2);
@@ -36,7 +36,7 @@ void Cmplx_test() {
 
 		answer.Re = arg1.Re * arg2.Re - arg1.Im * arg2.Im;
 		answer.Im = arg1.Im * arg2.Re + arg1.Re * arg2.Im;
-		Cmplx_multiply(&arg1, &arg2, &result);
+		result = *(Complex*)Cmplx_multiply(&arg1, &arg2);
 
 		Cmplx_print(&arg1);
 		Cmplx_print(&arg2);
@@ -69,7 +69,7 @@ void Cmplx_test() {
 
 		answer.Re = arg1.Re + arg2.Re;
 		answer.Im = arg1.Im + arg2.Im;
-		Cmplx_add(&arg1, &arg2, &result);
+		result = *(Complex*)Cmplx_add(&arg1, &arg2);
 
 		Cmplx_print(&arg1);
 		Cmplx_print(&arg2);
@@ -81,7 +81,7 @@ void Cmplx_test() {
 
 		answer.Re = arg1.Re * arg2.Re - arg1.Im * arg2.Im;
 		answer.Im = arg1.Im * arg2.Re + arg1.Re * arg2.Im;
-		Cmplx_multiply(&arg1, &arg2, &result);
+		result = *(Complex*)Cmplx_multiply(&arg1, &arg2);
 
 		Cmplx_print(&arg1);
 		Cmplx_print(&arg2);
@@ -109,44 +109,90 @@ void Cmplx_test() {
 
 void Mtrx_test() {
 	unsigned int order = 3;
+
 	Mtrx_error* code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-	*code = MATRIX_OPERATION_OK;
+	*code = MATRIX_OPERATION_FAILED;
+
 	Matrix* mtrx1 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
 	Matrix* mtrx2 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
 	Matrix* mtrx3 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
 
-	for (int i = 0; i < mtrx1->order; i++) {
-		for (int j = 0; j < mtrx1->order; j++) {
-			mtrx1->type_Info->scan(&mtrx1->elements[i][j]);
-			printf("///////\n");
-			mtrx2->type_Info->scan(&mtrx2->elements[i][j]);
-		}
-	}
+	Mtrx_fill(mtrx1);
+	printf("//////////\n");
+	Mtrx_fill(mtrx2);
 
-	Complex** result = (Complex**)malloc(sizeof(Complex*) * mtrx1->order);
-	for (int i = 0; i < mtrx1->order; i++) result[i] = (Complex*)malloc(sizeof(Complex) * mtrx1->order);
+	Matrix* result = Mtrx_create(Get_Cmplx_type_Info(), order, code);
 
 	Mtrx_add(mtrx1, mtrx2, mtrx3, code);
 
 	for (int i = 0; i < mtrx1->order; i++) {
 		for (int j = 0; j < mtrx1->order; j++) {
-				mtrx1->type_Info->add(&mtrx1->elements[i][j], &mtrx2->elements[i][j], &result[i][j]);
+			result->elements[i][j] = result->type_Info->add(&mtrx1->elements[i][j], &mtrx2->elements[i][j]);
 		}
 	}
 
-	for (int i = 0; i < mtrx1->order; i++) {
-		for (int j = 0; j < mtrx1->order; j++) {
-				assert(mtrx1->type_Info->compairson(&mtrx3->elements[i][j], &result[i][j]));
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(mtrx2); 
+	printf("\n\n");
+	Mtrx_print(mtrx3);
+	printf("\n\n");
+	Mtrx_print(result); 
+
+	assert(Mtrx_comparison(mtrx3, result));
+
+	printf("\n\nAddition Success\n\n");
+
+	Mtrx_multiply(mtrx1, mtrx2, mtrx3, code);
+
+	for (int i = 0; i < result->order; i++) {
+		for (int j = 0; j < result->order; j++) {
+			for (int k = 0; k < result->order; k++) {
+				if (k == 0) result->elements[i][j] = result->type_Info->multiply(&mtrx1->elements[i][k], &mtrx2->elements[k][i]);
+				result->elements[i][j] = result->type_Info->add(result->type_Info->multiply(&mtrx1->elements[i][k], &mtrx2->elements[k][j]), result->elements[i][j]);
+			}
 		}
 	}
 
-	if (mtrx1 != NULL) Mtrx_free(mtrx1);
-	if (mtrx2 != NULL) Mtrx_free(mtrx2);
-	if (mtrx3 != NULL) Mtrx_free(mtrx3);
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(mtrx2);
+	printf("\n\n");
+	Mtrx_print(mtrx3);
+	printf("\n\n");
+	Mtrx_print(result);
+
+	assert(Mtrx_comparison(mtrx3, result));
+
+	printf("\n\nMultiplication Success\n\n");
+	
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+
+	Complex one = { -1, 0 };
+	double digit = -1.0;
+
+	for (int i = 0; i < result->order; i++) {
+		for (int j = 0; j < result->order; j++) {
+			result->elements[i][j] = result->type_Info->multiply(&mtrx1->elements[i][j], &one);
+		}
+	}
+
+	Mtrx_multiply_digit(mtrx1, digit);
+
+	Mtrx_print(mtrx1);
+	printf("\n\n");
+	Mtrx_print(result);
+	printf("\n\n");
+
+	assert(Mtrx_comparison(mtrx1, result));
+
+	Mtrx_free(result);
+	Mtrx_free(mtrx1);
+	Mtrx_free(mtrx2);
+	Mtrx_free(mtrx3);
+
 	free(code);
-
-	for (int i = mtrx1->order - 1; i >= 0; i--) if (result[i] != NULL) free(result[i]);
-	if (result != NULL) free(result);
 
 	Free_Cmplx_type_Info();
 	Free_Int_type_Info();

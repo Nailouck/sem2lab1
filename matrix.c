@@ -9,8 +9,6 @@
 #include <stdbool.h>
 
 Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-	
-	//*code = MATRIX_OPERATION_OK;
 
 	if (order == 0) {
 		*code = NULL_MATRIX_ORDER;
@@ -29,10 +27,15 @@ Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) 
 	}
 
 	mtrx->type_Info = type_Info;
-	mtrx->elements = (void***)malloc(sizeof(void*) * order);
+	mtrx->elements = (void***)malloc(sizeof(void**) * order);
 	for (unsigned int i = 0; i < order; i++) {
 		mtrx->elements[i] = (void**)malloc(type_Info->size * order);
+		for (int j = 0; j < order; j++) {
+			mtrx->elements[i][j] = malloc(type_Info->size);
+		}
 	}
+
+	*code = MATRIX_OPERATION_OK;
 
 	err_proc(code);
 	return mtrx;
@@ -47,7 +50,13 @@ void Mtrx_fill(Matrix* mtrx) {
 }
 
 void Mtrx_free(Matrix* mtrx) {
+	if (mtrx == NULL) return;
 	for (int i = 0; i < mtrx->order; i++) {
+		if (mtrx->elements[i] == NULL) return;
+		for (int j = 0; j < mtrx->order; j++) {
+			if (mtrx->elements[i][j] == NULL) return;
+			free(mtrx->elements[i][j]);
+		}
 		free(mtrx->elements[i]);
 	}
 	free(mtrx->elements);
@@ -68,7 +77,9 @@ void Mtrx_add(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code) {
 
 	for (int i = 0; i < A->order; i++) {
 		for (int j = 0; j < A->order; j++) {
-			C->type_Info->add(&A->elements[i][j], &B->elements[i][j], &C->elements[i][j]);
+			void* old = C->elements[i][j];
+			C->elements[i][j] = C->type_Info->add(&A->elements[i][j], &B->elements[i][j]);
+			if (old != NULL) free(old);
 		}
 	}
 	*code = MATRIX_OPERATION_OK;
@@ -89,18 +100,26 @@ void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error*code)
 
 	for (int i = 0; i < A->order; i++) {
 		for (int j = 0; j < A->order; j++) {
-			C->type_Info->add(&A->elements[j][i], &B->elements[i][j], &C->elements[i][j]);
+			for (int k = 0; k < A->order; k++) {
+				void* old = C->elements[i][j];
+				if (k == 0) C->elements[i][j] = C->type_Info->multiply(&A->elements[i][k], &B->elements[k][i]);
+				else C->elements[i][j] = C->type_Info->add(C->type_Info->multiply(&A->elements[i][k], &B->elements[k][j]), &C->elements[i][j]);
+				if (old != NULL) free(old);
+			}
 		}
 	}
-
+	
 	*code = MATRIX_OPERATION_OK;
+
 	err_proc(code);
 }
 
 void Mtrx_multiply_digit(Matrix* A, const double digit) {
 	for (int i = 0; i < A->order; i++) {
 		for (int j = 0; j < A->order; j++) {
-			A->type_Info->multiply_digit(&A->elements[i][j], digit);
+			void* old = A->elements[i][j];
+			A->elements[i][j] = A->type_Info->multiply_digit(&A->elements[i][j], digit);
+			if (old != NULL) free(old);
 		}
 	}
 }
@@ -109,74 +128,21 @@ bool Mtrx_comparison(const Matrix* A, const Matrix* B) {
 	if (A->order != B->order) return false;
 	for (int i = 0; i < A->order; i++) {
 		for (int j = 0; j < A->order; j++) {
-			if (A->type_Info->compairson(&A->elements[i][j], &B->elements[i][j]) == false) return false;
+			if (A->type_Info->comparison(&A->elements[i][j], &B->elements[i][j]) == false) return false;
 		}
 	}
 	return true;
 }
 
-Matrix* Mtrx_identity(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-	Matrix* mtrx = Mtrx_create(type_Info, order, code);
-
-	if (*code != MATRIX_OPERATION_OK) { return NULL; }
-
-	Complex one = { 1, 0 };
-	Complex zero = { 0, 0 };
-
-	switch (type_Info->size) {
-		case sizeof(int) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(int*)mtrx->elements[i][j] = (i == j ? 1 : 0);
-				}
-			}
-			break;
-		case sizeof(Complex) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(Complex*)mtrx->elements[i][j] = (i == j ? one : zero);
-				}
-			}
-			break;
-	}
-	return mtrx;
-}
-
-Matrix* Mtrx_zero(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-	Matrix* mtrx = Mtrx_create(type_Info, order, code);
-
-	if (*code != MATRIX_OPERATION_OK) { return NULL; }
-
-	Complex zero = { 0, 0 };
-
-	switch (type_Info->size) {
-		case sizeof(int) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(int*)mtrx->elements[i][j] = 0;
-				}
-			}
-		break;
-		case sizeof(Complex) :
-			for (int i = 0; i < order; i++) {
-				for (int j = 0; j < order; j++) {
-					*(Complex*)mtrx->elements[i][j] = zero;
-				}
-			}
-		break;
-	}
-	return mtrx;
-}
-
 void Mtrx_print(Matrix* mtrx) {
-	printf("{ ");
+	printf("{");
 	for (size_t i = 0; i < mtrx->order; i++) {
-		printf("{ ");
+		printf("\t{ ");
 		for (size_t j = 0; j < mtrx->order; j++) {
-			mtrx->type_Info->print(mtrx->elements[i][j]);
+			mtrx->type_Info->print(&mtrx->elements[i][j]);
 			if (j < mtrx->order - 1) printf(", ");
 		}
-		printf(" }");
+		if (i < mtrx->order - 1) printf(" }\n");
 	}
-	printf(" }");
+	printf(" } }");
 }

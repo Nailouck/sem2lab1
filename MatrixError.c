@@ -30,5 +30,9 @@ void err_proc(Mtrx_error* code) {
         printf("INCOMPATIBLE ARRAY ORDER! Error code 600\n");
         break;
     }
+    case MATRIX_OPERATION_FAILED: {
+        printf("MATRIX OPERATION FAILED! Error code 700\n");
+        break;
+    }
     }
 }
