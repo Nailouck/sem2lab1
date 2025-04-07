@@ -20,7 +20,7 @@ unsigned short int operation_choice();
 
 unsigned short int get_matrix_order();
 
-void get_conditions(int argc, char* argv[], unsigned short int* choiced_operation, unsigned short int* choiced_type);
+void get_conditions(int argc, char* argv[], unsigned short int* choiced_operation, unsigned short int* choiced_type, Mtrx_error* code);
 
 double get_digit();
 

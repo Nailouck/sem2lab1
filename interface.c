@@ -4,6 +4,8 @@
 #define MULTIPLY 1
 #define MULTIPLY_ON_DIGIT 2
 
+bool first_run = true;
+
 unsigned short int type_choice() {
 	unsigned short int choice;
 	do {
@@ -29,53 +31,78 @@ unsigned short int get_matrix_order() {
     return order;
 }
 
- void get_conditions(int argc, char* argv[], unsigned short int* choiced_operation, unsigned short int* choiced_type) {
+ void get_conditions(int argc, char* argv[], unsigned short int* choiced_operation, unsigned short int* choiced_type, Mtrx_error* code) {
 
-    *choiced_operation = 0;
+    *choiced_operation = 1;
     *choiced_type = 0;
 
- 	int flag;
+ 	int opt;
+   optind = 1;
+
  	bool operation_flag = false;
  	bool type_flag = false;
 
- 	while (flag = getopt(argc, argv, "o:t:") != -1) {
- 		switch (flag) {
 
- 		case 'o':
 
- 			operation_flag = true;
+ 	if (first_run) {
 
- 			if (strcmp(optarg, "0") != 0 && strcmp(optarg, "1") != 0 && strcmp(optarg, "2") != 0) {
- 				printf("Operation has been writen wrong.\n");
- 				*choiced_operation = operation_choice();
- 			}
+      first_run = false;
 
- 			else {
- 				*choiced_operation = atoi(optarg);
- 			}
- 			break;
+      while ((opt = getopt(argc, argv, "o:t:")) != -1) {
 
- 		case 't':
+      switch (opt) {
 
- 			type_flag = true;
+          case 'o': {
 
- 			if (strcmp(optarg, "0") != 0 && strcmp(optarg, "1") != 0) {
- 				printf("Type of matrix has been writen wrong.\n");
- 				*choiced_type = type_choice();
- 			}
+              operation_flag = true;
 
- 			else {
- 				*choiced_type = atoi(optarg);
- 			}
- 			break;
+              if (optarg == NULL || (strcmp(optarg, "0") != 0 && strcmp(optarg, "1") != 0 && strcmp(optarg, "2") != 0)) {
+                  *choiced_operation = operation_choice();
+              }
+              
+              else {
+                  *choiced_operation = (unsigned short int)atoi(optarg);
+              }
+              break;
+          }
 
- 		}
- 	}
+          case 't': {
 
- 	if (operation_flag == false) *choiced_operation = operation_choice();
- 	if (type_flag == false) *choiced_type = type_choice();
+              type_flag = true;
 
-    return;
+              if (optarg == NULL || (strcmp(optarg, "0") != 0 && strcmp(optarg, "1") != 0)) {
+                  *choiced_type = type_choice();
+              } 
+              
+              else {
+                  *choiced_type = (unsigned short int)atoi(optarg);
+              }
+              break;
+          }
+
+          case '?': {
+              break;
+          }
+
+          default: {
+
+              *code = UNEXPECTED_PROGRAM_BEHAVIOR;
+              err_proc(code);
+              return;
+          }
+      }
+  }
+}
+
+  if (!operation_flag) {
+      *choiced_operation = operation_choice();
+  }
+
+  if (!type_flag) {
+      *choiced_type = type_choice();
+  }
+
+  *code = MATRIX_OPERATION_OK;
  }
 
  double get_digit() {
@@ -260,7 +287,9 @@ unsigned short int get_matrix_order() {
      unsigned short int choiced_operation;
      unsigned short int choiced_type;
 
-     get_conditions(argc, argv, &choiced_operation, &choiced_type);
+     get_conditions(argc, argv, &choiced_operation, &choiced_type, code);
+     if (*code != MATRIX_OPERATION_OK) return;
+     *code = MATRIX_OPERATION_FAILED;
      operation(choiced_operation, choiced_type, code);
  }
 
