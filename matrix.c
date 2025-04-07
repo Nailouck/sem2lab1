@@ -9,21 +9,16 @@
 #include <stdbool.h>
 
 Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return NULL;
-    }
     if (order == 0) {
         *code = NULL_MATRIX_ORDER;
+        err_proc(code);
         return NULL;
     }
 
     Matrix* mtrx = (Matrix*)malloc(sizeof(Matrix));
     if (!mtrx) {
         *code = MEMORY_ALLOCATION_FAILED;
+        err_proc(code);
         return NULL;
     }
 
@@ -79,18 +74,12 @@ Matrix* Mtrx_create(Type_Info* type_Info, unsigned int order, Mtrx_error* code) 
 }
 
 void Mtrx_fill(Matrix* mtrx, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return;
-    }
     if (mtrx == NULL) {
         *code = NULL_MATRIX;
         err_proc(code);
         return;
     }
+    printf("Write %d number(s) - elements of matrix.\n", mtrx->order * mtrx->order);
 	for (size_t i = 0; i < mtrx->order; i++) {
         if (mtrx->elements[i] == NULL) {
             *code = NULL_MATRIX;
@@ -106,6 +95,7 @@ void Mtrx_fill(Matrix* mtrx, Mtrx_error* code) {
 			mtrx->type_Info->scan(mtrx->elements[i][j]);
 		}
 	}
+    *code = MATRIX_OPERATION_OK;
 }
 
 void Mtrx_free(Matrix* mtrx) {
@@ -123,13 +113,6 @@ void Mtrx_free(Matrix* mtrx) {
 }
 
 void Mtrx_add(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return;
-    }
     if (A->elements == NULL || B->elements == NULL) {
         *code = NULL_MATRIX;
         err_proc(code);
@@ -167,13 +150,6 @@ void Mtrx_add(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code) {
 }
 
 void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return;
-    }
     if (A->elements == NULL || B->elements == NULL) {
         *code = NULL_MATRIX;
         err_proc(code);
@@ -181,10 +157,12 @@ void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code
     }
     if (C->order != A->order || A->order != B->order) {
         *code = INCOMPATIBLE_MATRIX_ORDERS;
+        err_proc(code);
         return;
     }
     if (A->type_Info != B->type_Info) {
         *code = INCOMPATIBLE_MATRIX_TYPES;
+        err_proc(code);
         return;
     }
 
@@ -223,13 +201,6 @@ void Mtrx_multiply(const Matrix* A, const Matrix* B, Matrix* C, Mtrx_error* code
 }
 
 void Mtrx_multiply_digit(Matrix* A, const double digit, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return;
-    }
     if (A->elements == NULL) {
         *code = NULL_MATRIX;
                 err_proc(code);
@@ -252,16 +223,10 @@ void Mtrx_multiply_digit(Matrix* A, const double digit, Mtrx_error* code) {
 			A->elements[i][j] = A->type_Info->multiply_digit(A->elements[i][j], digit);
 		}
 	}
+    *code = MATRIX_OPERATION_OK;
 }
 
 bool Mtrx_comparison(const Matrix* A, const Matrix* B, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return false;
-    }
     if (A->elements == NULL || B->elements == NULL) {
         *code = NULL_MATRIX;
                 err_proc(code);
@@ -281,6 +246,7 @@ bool Mtrx_comparison(const Matrix* A, const Matrix* B, Mtrx_error* code) {
                 err_proc(code);
                 return false;
             }
+            *code = MATRIX_OPERATION_OK;
 			if (A->type_Info->comparison(A->elements[i][j], B->elements[i][j]) == false) return false;
 		}
 	}
@@ -288,13 +254,6 @@ bool Mtrx_comparison(const Matrix* A, const Matrix* B, Mtrx_error* code) {
 }
 
 void Mtrx_print(Matrix* mtrx, Mtrx_error* code) {
-    if (code == NULL) {
-        code = (Mtrx_error*)malloc(sizeof(Mtrx_error));
-        *code = NULL_MATRIX_ERROR_CODE;
-        err_proc(code);
-        free(code);
-        return;
-    }
     if (mtrx->elements == NULL) {
         *code = NULL_MATRIX;
             err_proc(code);
@@ -307,7 +266,7 @@ void Mtrx_print(Matrix* mtrx, Mtrx_error* code) {
                 err_proc(code);
                 return;
         }
-		printf("\t{ ");
+		printf("\t{\t");
 		for (size_t j = 0; j < mtrx->order; j++) {
             if (mtrx->elements[i][j] == NULL) {
                 *code = NULL_MATRIX;
@@ -315,9 +274,10 @@ void Mtrx_print(Matrix* mtrx, Mtrx_error* code) {
                     return;
             }
 			mtrx->type_Info->print(mtrx->elements[i][j]);
-			if (j < mtrx->order - 1) printf(", ");
+			if (j < mtrx->order - 1) printf(",\t");
 		}
-		if (i < mtrx->order - 1) printf(" }\n");
+		if (i < mtrx->order - 1) printf("\t}\n");
 	}
-	printf(" } }");
+	printf("\t}\t}\n");
+    *code = MATRIX_OPERATION_OK;
 }

@@ -104,16 +104,23 @@ void Mtrx_test_Complex() {
 	*code = MATRIX_OPERATION_FAILED;
 
 	Matrix* mtrx1 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 	Matrix* mtrx2 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 	Matrix* mtrx3 = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_fill(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("//////////\n");
 	Mtrx_fill(mtrx2, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Matrix* result = Mtrx_create(Get_Cmplx_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_add(mtrx1, mtrx2, mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	for (int i = 0; i < mtrx1->order; i++) {
 		for (int j = 0; j < mtrx1->order; j++) {
@@ -122,18 +129,24 @@ void Mtrx_test_Complex() {
 	}
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx2, code); 
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code); 
+	*code = MATRIX_OPERATION_FAILED;
 
 	assert(Mtrx_comparison(mtrx3, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nAddition Success\n\n");
 
 	Mtrx_multiply(mtrx1, mtrx2, mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	for (int i = 0; i < result->order; i++) {
         for (int j = 0; j < result->order; j++) {
@@ -157,18 +170,24 @@ void Mtrx_test_Complex() {
     }
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx2, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	assert(Mtrx_comparison(mtrx3, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nMultiplication Success\n\n");
 	
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	Complex one = { -1, 0 };
@@ -181,13 +200,17 @@ void Mtrx_test_Complex() {
 	}
 
 	Mtrx_multiply_digit(mtrx1, digit, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	assert(Mtrx_comparison(mtrx1, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nMultiplication by digit Success\n\n");
 
@@ -209,16 +232,23 @@ void Mtrx_test_Integer() {
 	*code = MATRIX_OPERATION_FAILED;
 
 	Matrix* mtrx1 = Mtrx_create(Get_Int_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 	Matrix* mtrx2 = Mtrx_create(Get_Int_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 	Matrix* mtrx3 = Mtrx_create(Get_Int_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_fill(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("//////////\n");
 	Mtrx_fill(mtrx2, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Matrix* result = Mtrx_create(Get_Int_type_Info(), order, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_add(mtrx1, mtrx2, mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	for (int i = 0; i < mtrx1->order; i++) {
 		for (int j = 0; j < mtrx1->order; j++) {
@@ -227,18 +257,24 @@ void Mtrx_test_Integer() {
 	}
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx2, code); 
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code); 
+	*code = MATRIX_OPERATION_FAILED;
 
 	assert(Mtrx_comparison(mtrx3, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nAddition Success\n\n");
 
 	Mtrx_multiply(mtrx1, mtrx2, mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	for (int i = 0; i < result->order; i++) {
         for (int j = 0; j < result->order; j++) {
@@ -262,18 +298,24 @@ void Mtrx_test_Integer() {
     }
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx2, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(mtrx3, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	assert(Mtrx_comparison(mtrx3, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nMultiplication Success\n\n");
 	
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	double digit = -1.0;
@@ -285,13 +327,17 @@ void Mtrx_test_Integer() {
 	}
 
 	Mtrx_multiply_digit(mtrx1, digit, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_print(mtrx1, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 	Mtrx_print(result, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	assert(Mtrx_comparison(mtrx1, result, code));
+	*code = MATRIX_OPERATION_FAILED;
 
 	printf("\n\nMultiplication by digit Success\n\n");
 
@@ -311,17 +357,21 @@ void Mtrx_test_special() {
 	*code = MATRIX_OPERATION_FAILED;
 
 	Matrix* mtrx = Mtrx_create(Get_Int_type_Info(), 5, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_print(mtrx, code);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	Matrix* mtrx1 = (Matrix*)malloc(sizeof(Matrix));
 	Matrix* mtrx2 = (Matrix*)malloc(sizeof(Matrix));
 
 	Mtrx_add(mtrx1, mtrx2, mtrx, code);
+	*code = MATRIX_OPERATION_FAILED;
 
 	Mtrx_error* code1 = (Mtrx_error*)malloc(sizeof(Mtrx_error));
 	Mtrx_print(mtrx1, code1);
+	*code = MATRIX_OPERATION_FAILED;
 	printf("\n\n");
 
 	Mtrx_free(mtrx);

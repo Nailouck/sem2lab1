@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <string.h>
 
 #include "matrix.h"
 #include "MatrixError.h"
